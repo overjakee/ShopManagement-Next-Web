@@ -1,37 +1,14 @@
+// app/cart/page.tsx หรือ pages/cart.tsx
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { Trash2 } from "lucide-react"; // ใช้ icon สวย ๆ
-
-type CartItem = {
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-};
+import { Trash2 } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "เสื้อยืดสีดำ",
-      quantity: 2,
-      price: 250,
-    },
-    {
-      id: 2,
-      name: "กางเกงยีนส์ชาย",
-      quantity: 1,
-      price: 790,
-    },
-  ]);
+  const { cartItems, removeFromCart, getTotalPrice } = useCart();
 
-  const handleRemoveItem = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const total = cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  const total = getTotalPrice();
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
@@ -55,7 +32,7 @@ export default function CartPage() {
                   ฿ {item.quantity * item.price}
                 </div>
                 <button
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => removeFromCart(item.id)}
                   className="text-red-500 hover:text-red-700 transition"
                   title="ลบสินค้า"
                 >
