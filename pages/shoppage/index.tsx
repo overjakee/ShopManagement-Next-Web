@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
-import { FaShoppingCart } from "react-icons/fa";
 
 // Mock ข้อมูลสินค้า (เพิ่มรายละเอียดสินค้าด้วย)
 const mockProducts = Array.from({ length: 18 }, (_, i) => ({
@@ -34,55 +33,14 @@ export default function ShopPage() {
 
   // ⭐ Drag Scroll Logic สำหรับสินค้ายอดนิยม
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isDown = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
 
   useEffect(() => {
-    const slider = scrollRef.current;
-    if (!slider) return;
-
-    const handleMouseDown = (e: MouseEvent) => {
-      isDown.current = true;
-      startX.current = e.pageX - slider.offsetLeft;
-      scrollLeft.current = slider.scrollLeft;
-      slider.classList.add("cursor-grabbing");
-    };
-
-    const handleMouseLeave = () => {
-      isDown.current = false;
-      slider.classList.remove("cursor-grabbing");
-    };
-
-    const handleMouseUp = () => {
-      isDown.current = false;
-      slider.classList.remove("cursor-grabbing");
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDown.current) return;
-      e.preventDefault();
-      const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX.current) * 1.5;
-      slider.scrollLeft = scrollLeft.current - walk;
-    };
-
-    slider.addEventListener("mousedown", handleMouseDown);
-    slider.addEventListener("mouseleave", handleMouseLeave);
-    slider.addEventListener("mouseup", handleMouseUp);
-    slider.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      slider.removeEventListener("mousedown", handleMouseDown);
-      slider.removeEventListener("mouseleave", handleMouseLeave);
-      slider.removeEventListener("mouseup", handleMouseUp);
-      slider.removeEventListener("mousemove", handleMouseMove);
-    };
+    
   }, []);
 
   return (
     <div className="p-6 max-w-screen-xl mx-auto">
-      {/* 🔥 สินค้ายอดนิยม */}
+      {/* สินค้ายอดนิยม */}
       <section className="mb-10">
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">
           สินค้ายอดนิยม
@@ -105,7 +63,7 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* 🔍 Filter */}
+      {/* Filter */}
       <section className="mb-8">
         <div className="flex flex-wrap gap-3 items-center">
           <select
@@ -138,7 +96,7 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* 🧱 Grid + Pagination */}
+      {/* Grid + Pagination */}
       <section>
         {currentItems.length === 0 ? (
           <p className="text-gray-500">ไม่พบสินค้าที่ตรงกับเงื่อนไข</p>
@@ -185,4 +143,3 @@ export default function ShopPage() {
     </div>
   );
 }
-

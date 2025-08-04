@@ -1,7 +1,9 @@
+// pages/product/[productId].tsx
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
 
-// ข้อมูลเดียวกับ mockProducts ด้านบน (จริงๆ ให้ดึง API มา)
+// mock data (ในของจริงให้ดึงจาก API หรือ DB)
 const mockProducts = Array.from({ length: 40 }, (_, i) => ({
   id: i + 1,
   name: `Product ${i + 1}`,
@@ -15,13 +17,10 @@ const mockProducts = Array.from({ length: 40 }, (_, i) => ({
 export default function ProductDetailPage() {
   const router = useRouter();
   const { productId } = router.query;
-
-  // หา product ตาม productId (แปลงเป็น number ก่อน)
-  const product = mockProducts.find(
-    (p) => p.id === Number(productId)
-  );
-
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
+
+  const product = mockProducts.find((p) => p.id === Number(productId));
 
   if (!product) {
     return (
@@ -40,14 +39,20 @@ export default function ProductDetailPage() {
   const increaseQty = () => setQuantity((q) => q + 1);
   const decreaseQty = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
-  const addToCart = () => {
-    alert(`เพิ่มสินค้า "${product.name}" จำนวน ${quantity} ลงตะกร้า`);
-    // TODO: เชื่อมระบบตะกร้าจริง ๆ
+  const addToCartHandler = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity,
+    });
+    alert(`เพิ่มสินค้า "${product.name}" จำนวน ${quantity} ลงตะกร้าแล้ว`);
   };
 
   return (
     <div className="p-6 max-w-screen-md mx-auto flex flex-col md:flex-row gap-8">
-      {/* รูปสินค้าซ้าย */}
+      {/* รูปสินค้า */}
       <div className="md:w-1/2">
         <img
           src={product.image}
@@ -56,7 +61,7 @@ export default function ProductDetailPage() {
         />
       </div>
 
-      {/* รายละเอียดสินค้า ขวา */}
+      {/* รายละเอียด */}
       <div className="md:w-1/2 flex flex-col justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
@@ -66,7 +71,6 @@ export default function ProductDetailPage() {
           <p className="text-gray-700 mb-6">{product.description}</p>
         </div>
 
-        {/* ปุ่มบวกลบจำนวน และ เพิ่มตะกร้า */}
         <div className="flex items-center gap-4">
           <div className="flex items-center border rounded-lg overflow-hidden">
             <button
@@ -85,7 +89,7 @@ export default function ProductDetailPage() {
           </div>
 
           <button
-            onClick={addToCart}
+            onClick={addToCartHandler}
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
           >
             เพิ่มสินค้าลงตะกร้า

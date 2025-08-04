@@ -1,6 +1,6 @@
-// pages/admin/orders/index.tsx
 import AdminLayout from "@/components/AdminLayout";
 import { useState } from "react";
+import Link from "next/link";
 
 const mockOrders = [
   {
@@ -24,13 +24,14 @@ const mockOrders = [
     status: "ยกเลิก",
     createdAt: "2025-07-20",
   },
-  // เพิ่ม mock เพิ่มเติมหากต้องการทดสอบ pagination
 ];
 
 export default function OrdersPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [searchOrderId, setSearchOrderId] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -43,6 +44,11 @@ export default function OrdersPage() {
     if (start && orderDate < start) return false;
     if (end && orderDate > end) return false;
     if (statusFilter && order.status !== statusFilter) return false;
+    if (searchName && !order.customerName.toLowerCase().includes(searchName.toLowerCase()))
+      return false;
+    if (searchOrderId && !order.id.toLowerCase().includes(searchOrderId.toLowerCase()))
+      return false;
+
     return true;
   });
 
@@ -56,6 +62,8 @@ export default function OrdersPage() {
     setStartDate("");
     setEndDate("");
     setStatusFilter("");
+    setSearchName("");
+    setSearchOrderId("");
     setCurrentPage(1);
   };
 
@@ -104,6 +112,28 @@ export default function OrdersPage() {
             </select>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium mb-1">ค้นหาชื่อลูกค้า</label>
+            <input
+              type="text"
+              className="border border-gray-300 rounded px-3 py-2"
+              placeholder="กรอกชื่อ..."
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">ค้นหาหมายเลข</label>
+            <input
+              type="text"
+              className="border border-gray-300 rounded px-3 py-2"
+              placeholder="รหัสสั่งซื้อ..."
+              value={searchOrderId}
+              onChange={(e) => setSearchOrderId(e.target.value)}
+            />
+          </div>
+
           <button
             onClick={resetFilters}
             className="ml-auto bg-gray-200 hover:bg-gray-300 text-sm px-4 py-2 rounded"
@@ -146,8 +176,12 @@ export default function OrdersPage() {
                   </td>
                   <td className="py-2 px-4 text-center">{order.createdAt}</td>
                   <td className="py-2 px-4 text-center">
-                    <button className="text-blue-600 hover:underline mr-3">ดูรายละเอียด</button>
-                    <button className="text-red-600 hover:underline">ยกเลิก</button>
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      แก้ไขข้อมูล
+                    </Link>
                   </td>
                 </tr>
               ))
